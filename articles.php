@@ -95,9 +95,9 @@
                         <?php
                         // Connexion à la base de données
                         $host = 'localhost';
-                        $user = 'root';
-                        $password = '';
-                        $dbname = 'site_ventes';
+						$user = 'rif0_38831282oot';
+						$password = '1OY5B3bJzXjO';
+						$dbname = 'if0_38831282_site_ventes';
 
                         $conn = new mysqli($host, $user, $password, $dbname);
                         if ($conn->connect_error) {
