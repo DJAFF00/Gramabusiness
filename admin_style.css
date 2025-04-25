@@ -1,0 +1,40 @@
+body {
+    background-color: #f8f9fa;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    background: linear-gradient(45deg, #6c63ff, #3b3b98);
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+form label {
+    font-weight: 600;
+    color: #3b3b98;
+}
+
+button {
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #3b3b98;
+    color: #fff;
+}
+
+.table thead {
+    background-color: #6c63ff;
+}
+
+.table thead th {
+    color: white;
+}
+
+.table tbody tr:hover {
+    background-color: #f1f1f1;
+    transition: background-color 0.3s ease;
+}
