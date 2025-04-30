@@ -93,11 +93,15 @@
                         </div>
 
                         <?php
+						ini_set('display_errors', 1);
+						ini_set('display_startup_errors', 1);
+						error_reporting(E_ALL);
+
                         // Connexion à la base de données
-                        $host = 'localhost';
-						$user = 'rif0_38831282oot';
-						$password = '1OY5B3bJzXjO';
-						$dbname = 'if0_38831282_site_ventes';
+                        $host = 'sql304.infinityfree.com';
+						$user = 'if0_38858947';
+						$password = 'HQ5IIe6qUzg';
+						$dbname = 'if0_38858947_dbsite_ventes';
 
                         $conn = new mysqli($host, $user, $password, $dbname);
                         if ($conn->connect_error) {
@@ -199,7 +203,7 @@
 					<div class="benefit_item d-flex flex-row align-items-center">
 						<div class="benefit_icon"><i class="fa fa-money" aria-hidden="true"></i></div>
 						<div class="benefit_content">
-							<h6>CACH à la livraison</h6>
+							<h6>CACH avant la livraison</h6>
 							<p>Peut dépendre quelques fois</p>
 						</div>
 					</div>

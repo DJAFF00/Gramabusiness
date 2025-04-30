@@ -25,7 +25,7 @@
     <section class="py-5">
         <div class="container">
             <h2 class="text-center mb-4">Ajouter un nouvel article</h2>
-            <form method="POST" action="admin_process.php" enctype="multipart/form-data" class="row g-3">
+            <form method="POST" action="" enctype="multipart/form-data" class="row g-3">
                 <div class="col-md-6">
                     <label for="title" class="form-label">Titre de l'article</label>
                     <input type="text" class="form-control" id="title" name="title" required>
@@ -60,6 +60,54 @@
 
     <div class="container mt-3">
         <?php
+            ini_set('display_errors', 1);
+            ini_set('display_startup_errors', 1);
+            error_reporting(E_ALL);
+            
+            // Connexion à la base de données
+            $host = 'sql304.infinityfree.com';
+            $user = 'if0_38858947';
+            $password = 'HQ5IIe6qUzg';
+            $dbname = 'if0_38858947_dbsite_ventes';
+
+            // Établir la connexion
+            $conn = new mysqli($host, $user, $password, $dbname);
+
+            // Vérifier la connexion
+            if ($conn->connect_error) {
+                die("Connexion échouée : " . $conn->connect_error);
+            }
+
+            // Ajouter un nouvel article
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                $titre = $_POST['title'];
+                $description = $_POST['description'];
+                $prix = $_POST['price'];
+                $image = $_FILES['image']['name'];
+                $categorie = $_POST['categorie'];
+
+                // Chemin pour l'image
+                $target_dir = "uploads/";
+                $target_file = $target_dir . basename($image);
+
+                // Créer le dossier uploads s'il n'existe pas
+                if (!file_exists($target_dir)) {
+                    mkdir($target_dir, 0777, true);
+                }
+
+                // Déplacer l'image téléchargée
+                if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
+                    $sql = "INSERT INTO articles (titre, description, prix, image, categorie) VALUES ('$titre', '$description', '$prix', '$image', '$categorie')";
+                    if ($conn->query($sql) === TRUE) {
+                        echo '<div class="alert alert-success text-center fade show" role="alert" id="alertMessage">L\'article a été ajouté avec succès.</div>';
+                    } else {
+                        echo '<div class="alert alert-danger text-center fade show" role="alert" id="alertMessage">Erreur : ' . $conn->error . '</div>';
+                    }
+                } else {
+                    echo '<div class="alert alert-danger text-center fade show" role="alert" id="alertMessage">Erreur lors du téléchargement de l\'image.</div>';
+                }
+            }
+
             if (isset($_GET['suppression_reussie'])) {
                 echo '<div class="alert alert-success text-center fade show" role="alert" id="alertMessage">L\'article a été supprimé avec succès.</div>';
             }
@@ -94,20 +142,9 @@
                 </thead>
                 <tbody>
                     <?php
-                        // Connexion à la base de données
-                        $host = 'localhost';
-                        $user = 'rif0_38831282oot';
-                        $password = '1OY5B3bJzXjO';
-                        $dbname = 'if0_38831282_site_ventes';
-
-                        // Vérifier la connexion
-                        if ($conn->connect_error) {
-                            die("Erreur de connexion : " . $conn->connect_error);
-                        }
-
-                        // Récupérer les articles
-                        $sql = "SELECT * FROM articles";
-                        $result = $conn->query($sql);
+                        // Récupérer les articles (la connexion est déjà établie ci-dessus)
+                        $sql_select = "SELECT * FROM articles";
+                        $result = $conn->query($sql_select);
 
                         if ($result->num_rows > 0) {
                             while ($row = $result->fetch_assoc()) {
@@ -126,6 +163,7 @@
                             echo "<tr><td colspan='6' class='text-center'>Aucun article trouvé.</td></tr>";
                         }
 
+                        // Fermer la connexion à la fin du fichier
                         $conn->close();
                     ?>
                 </tbody>

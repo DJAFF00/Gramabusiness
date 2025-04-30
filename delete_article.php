@@ -4,7 +4,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $article_id = $_GET['id'];
 
     // Connexion à la base de données
-    $conn = new mysqli('localhost', 'root', '', 'site_ventes');
+    $conn = new mysqli('sql304.infinityfree.com', 'if0_38858947', 'HQ5IIe6qUzg', 'if0_38858947_dbsite_ventes');
 
     // Vérifier la connexion
     if ($conn->connect_error) {

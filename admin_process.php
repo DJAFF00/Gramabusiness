@@ -1,6 +1,6 @@
 <?php
 // Connexion à la base de données
-$host = 'localhost';
+$host = 'sql304.infinityfree.com';
 $user = 'rif0_38831282oot';
 $password = '1OY5B3bJzXjO';
 $dbname = 'if0_38831282_site_ventes';
