@@ -1,0 +1,19 @@
+.product-item {
+    margin-bottom: 30px; /* Ajustez cette valeur pour l'espacement souhaité */
+}
+
+.product_image img {
+    width: 100%; /* L'image prend toute la largeur de son conteneur */
+    height: auto; /* La hauteur s'ajuste automatiquement pour conserver les proportions */
+    display: block; /* Supprime l'espace potentiel en bas de l'image */
+    object-fit: cover; /* Remplit le conteneur en conservant les proportions, peut couper certaines parties */
+    /* ou */
+    /* object-fit: contain; /* Adapte l'image au conteneur sans la couper, peut laisser des espaces vides */
+   }
+   
+   .product_image {
+    overflow: hidden; /* Empêche l'image de dépasser de ce conteneur si object-fit: cover est utilisé */
+    /* Vous pouvez également définir une hauteur fixe pour les images si vous le souhaitez, */
+    /* mais cela pourrait déformer les proportions si les images d'origine ont des ratios différents. */
+    /* height: 200px; par exemple */
+   }

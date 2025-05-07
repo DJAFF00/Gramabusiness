@@ -25,37 +25,59 @@
     <section class="py-5">
         <div class="container">
             <h2 class="text-center mb-4">Ajouter un nouvel article</h2>
-            <form method="POST" action="" enctype="multipart/form-data" class="row g-3">
-                <div class="col-md-6">
-                    <label for="title" class="form-label">Titre de l'article</label>
-                    <input type="text" class="form-control" id="title" name="title" required>
+            <form method="POST" action="" enctype="multipart/form-data" class="row g-3" id="articleForm">
+            <div id="articlesContainer">
+                <div class="row g-3 article-item">
+                    <div class="col-md-6">
+                        <label class="form-label">Titre de l'article</label>
+                        <input type="text" class="form-control" name="title[]" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description[]" required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Prix (cfa)</label>
+                        <input type="number" class="form-control" name="price[]" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Catégorie</label>
+                        <select class="form-select" name="categorie[]" required>
+                            <option value="">Sélectionnez une catégorie</option>
+                            <option value="femmes">Femmes</option>
+                            <option value="accessoires">Accessoires</option>
+                            <option value="hommes">Hommes</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Image</label>
+                        <input type="file" class="form-control" name="image[]" accept="image/*" required>
+                    </div>
+                    <hr>
                 </div>
-                <div class="col-md-6">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea class="form-control" id="description" name="description" required></textarea>
-                </div>
-                <div class="col-md-6">
-                    <label for="price" class="form-label">Prix (cfa)</label>
-                    <input type="number" class="form-control" id="price" name="price" required>
-                </div>
-                <div class="col-md-6">
-                    <label for="categorie" class="form-label">Catégorie</label>
-                    <select class="form-select" id="categorie" name="categorie" required>
-                        <option value="">Sélectionnez une catégorie</option>
-                        <option value="femmes">Femmes</option>
-                        <option value="accessoires">Accessoires</option>
-                        <option value="hommes">Hommes</option>
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label for="image" class="form-label">Image de l'article</label>
-                    <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
-                </div>
-                <div class="col-12 text-center">
-                    <button type="submit" class="btn btn-primary w-50">Ajouter l'article</button>
-                </div>
-            </form>
+            </div>
+            <div class="col-12 text-center">
+                <button type="button" class="btn btn-secondary mb-3" onclick="addArticle()">Ajouter un autre article</button><br>
+                <button type="submit" class="btn btn-primary w-50">Ajouter les articles</button>
+            </div>
+        </form>
+
         </div>
+        <script>
+            function addArticle() {
+                const container = document.getElementById('articlesContainer');
+                const firstItem = document.querySelector('.article-item');
+                const newItem = firstItem.cloneNode(true);
+
+                // Réinitialiser les champs
+                newItem.querySelectorAll('input, textarea, select').forEach(el => {
+                    el.value = '';
+                });
+
+                container.appendChild(newItem);
+            }
+        </script>
+
     </section>
 
     <div class="container mt-3">
@@ -80,33 +102,42 @@
 
             // Ajouter un nouvel article
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                $titre = $_POST['title'];
-                $description = $_POST['description'];
-                $prix = $_POST['price'];
-                $image = $_FILES['image']['name'];
-                $categorie = $_POST['categorie'];
+                $titles = $_POST['title'];
+                $descriptions = $_POST['description'];
+                $prices = $_POST['price'];
+                $categories = $_POST['categorie'];
+                $images = $_FILES['image'];
 
-                // Chemin pour l'image
                 $target_dir = "uploads/";
-                $target_file = $target_dir . basename($image);
 
-                // Créer le dossier uploads s'il n'existe pas
                 if (!file_exists($target_dir)) {
                     mkdir($target_dir, 0777, true);
                 }
 
-                // Déplacer l'image téléchargée
-                if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
-                    $sql = "INSERT INTO articles (titre, description, prix, image, categorie) VALUES ('$titre', '$description', '$prix', '$image', '$categorie')";
-                    if ($conn->query($sql) === TRUE) {
-                        echo '<div class="alert alert-success text-center fade show" role="alert" id="alertMessage">L\'article a été ajouté avec succès.</div>';
+                for ($i = 0; $i < count($titles); $i++) {
+                    $titre = $conn->real_escape_string($titles[$i]);
+                    $description = $conn->real_escape_string($descriptions[$i]);
+                    $prix = intval($prices[$i]);
+                    $categorie = $conn->real_escape_string($categories[$i]);
+
+                    $imageName = basename($images['name'][$i]);
+                    $imageTmpName = $images['tmp_name'][$i];
+                    $target_file = $target_dir . $imageName;
+
+                    if (move_uploaded_file($imageTmpName, $target_file)) {
+                        $sql = "INSERT INTO articles (titre, description, prix, image, categorie)
+                                VALUES ('$titre', '$description', '$prix', '$imageName', '$categorie')";
+                        if (!$conn->query($sql)) {
+                            echo "<div class='alert alert-danger text-center'>Erreur lors de l'ajout de l'article $titre : " . $conn->error . "</div>";
+                        }
                     } else {
-                        echo '<div class="alert alert-danger text-center fade show" role="alert" id="alertMessage">Erreur : ' . $conn->error . '</div>';
+                        echo "<div class='alert alert-danger text-center'>Échec du téléchargement de l'image pour l'article $titre.</div>";
                     }
-                } else {
-                    echo '<div class="alert alert-danger text-center fade show" role="alert" id="alertMessage">Erreur lors du téléchargement de l\'image.</div>';
                 }
+
+                echo '<div class="alert alert-success text-center" role="alert" id="alertMessage">Tous les articles ont été traités.</div>';
             }
+
 
             if (isset($_GET['suppression_reussie'])) {
                 echo '<div class="alert alert-success text-center fade show" role="alert" id="alertMessage">L\'article a été supprimé avec succès.</div>';
